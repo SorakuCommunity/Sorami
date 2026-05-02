@@ -47,24 +47,24 @@
   - [x] infra/nginx
   - [x] infra/scripts
 
-- [ ] Setup GitHub repository + branching strategy
-  - [ ] master branch
-  - [ ] dev branch
-  - [ ] feature/*
-  - [ ] fix/*
-  - [ ] release/*
-  - [ ] Protect master branch
-  - [ ] Require PR review
+- [x] Setup GitHub repository + branching strategy
+  - [x] master branch
+  - [x] dev branch
+  - [x] feature/*
+  - [x] fix/*
+  - [x] release/*
+  - [x] Protect master branch
+  - [x] Require PR review
 
-- [ ] Setup issue labels + milestone planning
-  - [ ] bug
-  - [ ] feature
-  - [ ] urgent
-  - [ ] enhancement
-  - [ ] docs
-  - [ ] MVP
-  - [ ] v1.1
-  - [ ] v2.0
+- [x] Setup issue labels + milestone planning
+  - [x] bug
+  - [x] feature
+  - [x] urgent
+  - [x] enhancement
+  - [x] docs
+  - [x] MVP
+  - [x] v1.1
+  - [x] v2.0
 
 ---
 
@@ -425,12 +425,12 @@
 
 - [ ] Create API documentation (Swagger)
 - [ ] Implement testing strategy
-- [ ] Setup performance monitoring
-- [ ] Add analytics system
-- [ ] CI/CD all services
-- [ ] Create deployment guides
-- [ ] Setup feature flags
-- [ ] Implement i18n across all platforms
+  - [ ] Setup performance monitoring
+  - [ ] Add analytics system
+  - [ ] CI/CD all services
+  - [ ] Create deployment guides
+  - [ ] Setup feature flags
+  - [ ] Implement i18n across all platforms
 
 ---
 
