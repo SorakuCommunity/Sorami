@@ -1,6 +1,10 @@
 # Ignore everything in the repository
 *
-# Whitelist specific files that should be tracked
+# Whitelist source directories
+!apps/
+!infra/
+!packages/
+# Whitelist specific root files
 !.gitignore
 !README.md
 !TODO.md
