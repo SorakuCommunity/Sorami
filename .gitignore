@@ -1,0 +1,9 @@
+# Ignore everything in the repository
+*
+# Whitelist specific files that should be tracked
+!.gitignore
+!README.md
+!TODO.md
+!SECURITY.md
+!LICENSE
+!LICENSE.md
