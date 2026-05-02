@@ -1,0 +1,51 @@
+# Flutter/Dart/Pub related
+.dart_tool/
+.packages
+.flutter-plugins
+**/ios/**/.symlinks
+**/ios/**/Flutter/**/Flutter.podspec
+**/android/**/gradle-wrapper.jar
+**/android/**/gradlew
+**/android/**/gradlew.bat
+**/android/**/local.properties
+**/android/**/GoogleService-Info.plist
+**/android/**/google-services.json
+**/ios/**/Pods
+
+# Android related
+**/android/**/build/
+**/android/**/captures/
+**/android/**/generated/
+build/
+
+# iOS related
+**/ios/**/DerivedData/
+**/ios/**/*.ipa
+**/ios/**/*.xcworkspace
+**/ios/**/*.xcodeproj
+**/ios/**/xcuserdata/
+**/ios/**/*.xcshareddata/
+
+# Dart VM
+.dart_tool/
+.packages
+.dart-lang-server/
+.server/
+.project
+.classpath
+
+# Exceptions to the above rules:
+# !**/ios/**/default.ini
+
+# Exported java headers
+**/*.java
+# protobuf generated files
+**/*.pb.go
+**/*.pb.dart
+**/*.pb.dart.json
+
+# Flutter Release
+release/
+
+# Web
+web/
