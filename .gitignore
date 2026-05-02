@@ -1,13 +1,35 @@
-# Ignore everything in the repository
-*
-# Whitelist source directories
-!apps/
-!infra/
-!packages/
-# Whitelist specific root files
-!.gitignore
+# VScode
+.vscode
+.kilo
+.idea
+
+# Ignore Mac system files
+.DS_Store
+.AppleDouble
+.LSOverride
+
+# Ignore node_modules
+node_modules
+*.tsbuildinfo
+
+# Ignore build output
+dist
+build
+out
+coverage
+
+# Ignore logs
+logs
+*.log
+*.sw
+
+
+# Markdown files
+*.md
 !README.md
-!TODO.md
 !SECURITY.md
-!LICENSE
+!CONTRIBUTING.md
+!CHANGELOG.md
+!CODE_OF_CONDUCT.md
+!SUPPORT.md
 !LICENSE.md

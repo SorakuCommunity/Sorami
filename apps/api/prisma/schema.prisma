@@ -1,0 +1,109 @@
+// apps/api/prisma/schema.prisma
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String   @id @default(uuid())
+  username      String   @unique
+  email         String   @unique
+  avatar        String?
+  role          String   @default("USER")
+  premiumUntil  DateTime?
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+  history       History[]
+  favorites     Favorite[]
+  watchlist     Watchlist[]
+  comments      Comment[]
+}
+
+model Anime {
+  id          String   @id @default(uuid())
+  title       String
+  slug        String   @unique
+  synopsis    String?
+  posterUrl   String?
+  bannerUrl   String?
+  genres      String[] @default([])
+  status      String   // e.g., RELEASING, FINISHED, NOT_YET_RELEASED
+  season      String?  // e.g., WINTER_2023
+  studio      String?
+  score       Float?   // average rating
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  episodes    Episode[]
+  history     History[]
+  favorites   Favorite[]
+  watchlist   Watchlist[]
+  comments    Comment[]
+}
+
+model Episode {
+  id          String   @id @default(uuid())
+  animeId     String
+  anime       Anime    @relation(fields: [animeId], references: [id])
+  number      Int
+  title       String?
+  duration    Int      // in minutes
+  hls320      String?  // URL to 320p HLS stream
+  hls480      String?  // URL to 480p HLS stream
+  hls720      String?  // URL to 720p HLS stream
+  hls1080     String?  // URL to 1080p HLS stream
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  history     History[]
+
+  @@index([animeId, number])
+}
+
+model History {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  episodeId String
+  episode   Episode  @relation(fields: [episodeId], references: [id])
+  progress  Float    @default(0.0) // 0.0 to 1.0
+  watchedAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId, episodeId])
+}
+
+model Favorite {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  animeId   String
+  anime     Anime    @relation(fields: [animeId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, animeId])
+}
+
+model Watchlist {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  animeId   String
+  anime     Anime    @relation(fields: [animeId], references: [id])
+  createdAt DateTime @default(now())
+
+  @@unique([userId, animeId])
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  animeId   String
+  anime     Anime    @relation(fields: [animeId], references: [id])
+  content   String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
