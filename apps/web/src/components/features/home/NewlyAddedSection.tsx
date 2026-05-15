@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { Clock } from "lucide-react";
 import { AnimeCard } from "@/components/shared/AnimeCard";
-import { getPopularAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getPopularAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function NewlyAddedSection() {
   const [anime, setAnime] = useState<Anime[]>([]);

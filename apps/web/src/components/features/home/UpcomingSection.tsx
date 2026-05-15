@@ -4,8 +4,8 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Calendar } from "lucide-react";
-import { getAiringAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getAiringAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function UpcomingSection() {
   const [anime, setAnime] = useState<Anime[]>([]);

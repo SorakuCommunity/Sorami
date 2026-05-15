@@ -4,8 +4,8 @@ import { useState, useRef, useEffect } from "react";
 import { AnimeCard } from "@/components/shared/AnimeCard";
 import { ChevronLeft, ChevronRight, TrendingUp } from "lucide-react";
 import Link from "next/link";
-import { getTrendingAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getTrendingAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function TrendingCarousel() {
   const [animeList, setAnimeList] = useState<Anime[]>([]);

@@ -4,8 +4,8 @@ import { useState, useEffect } from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Clock } from "lucide-react";
-import { getTrendingAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getTrendingAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function ContinueWatching() {
   const [animeList, setAnimeList] = useState<Anime[]>([]);

@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import { Sparkles } from "lucide-react";
 import { AnimeCard } from "@/components/shared/AnimeCard";
-import { getSeasonalAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getSeasonalAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function RecommendedSection() {
   const [anime, setAnime] = useState<Anime[]>([]);

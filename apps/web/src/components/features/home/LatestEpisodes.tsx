@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { getRecentAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getRecentAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function LatestEpisodes() {
   const [animes, setAnimes] = useState<Anime[]>([]);

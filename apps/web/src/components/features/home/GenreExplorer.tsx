@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { getGenres } from "@/lib/anime-server";
+import { getGenres } from "@/lib/anime-client";
 
 export function GenreExplorer() {
   const [genres, setGenres] = useState<string[]>([]);

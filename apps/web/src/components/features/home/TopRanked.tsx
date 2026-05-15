@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Star } from "lucide-react";
-import { getTopRatedAnime } from "@/lib/anime-server";
-import type { Anime } from "@/lib/anime-server";
+import { getTopRatedAnime } from "@/lib/anime-client";
+import type { Anime } from "@/lib/anime-client";
 
 export function TopRanked() {
   const [animes, setAnimes] = useState<Anime[]>([]);
