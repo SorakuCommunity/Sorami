@@ -143,15 +143,19 @@ const SEARCH_QUERY = `query ($q: String, $page: Int, $perPage: Int, $genre: Stri
 
 const ANIME_INFO_QUERY = `query ($id: Int) {
   Media(id: $id, type: ANIME) {
-    id title { romaji english native }
+    id
+    title { romaji english native }
     coverImage { extraLarge large medium }
-    bannerImage description
-    averageScore episodes status genres format seasonYear
-    startDate { year month day } endDate { year month day }
-    duration chapters volumes
-    hashtag source
-    studios { nodes { name isAnimationStudio } }
-    nextAiringEpisode { episode airingAt }
+    bannerImage
+    description
+    averageScore
+    episodes
+    status
+    genres
+    format
+    seasonYear
+    startDate { year }
+    duration
   }
 }`;
 
