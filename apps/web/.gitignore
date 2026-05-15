@@ -1,0 +1,17 @@
+node_modules
+.env.local
+PROMPTS.md
+pnpm-lock.yaml
+.next
+dist
+build
+coverage
+logs
+*.log
+*.tsbuildinfo
+.DS_Store
+.idea
+.vscode
+.kilo
+.env
+.env.*.local

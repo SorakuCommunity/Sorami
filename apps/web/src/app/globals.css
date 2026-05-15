@@ -1,0 +1,218 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@700;800;900&display=swap');
+
+@import "tailwindcss";
+
+@theme {
+  --font-outfit: "Outfit", sans-serif;
+  --font-inter: "Inter", sans-serif;
+
+  /* Soraku Brand Colors */
+  --color-soraku-primary: #4FA3D1;
+  --color-soraku-dark: #1C1E22;
+  --color-soraku-secondary: #6E8FA6;
+  --color-soraku-light: #D9DDE3;
+  --color-soraku-accent: #E8C2A8;
+  --color-soraku-surface: #23262B;
+  --color-soraku-surface-light: #2A2D33;
+
+  /* Legacy mappings */
+  --color-primary: #1C1E22;
+  --color-secondary: #6E8FA6;
+  --color-action: #4FA3D1;
+  --color-image: #2A2D33;
+  --color-txt: #D9DDE3;
+  --color-tersier: #0d0e10;
+
+  --color-background: #1C1E22;
+  --color-foreground: #D9DDE3;
+  --color-card: #23262B;
+  --color-card-foreground: #D9DDE3;
+  --color-muted: #2A2D33;
+  --color-muted-foreground: #6E8FA6;
+
+  --radius-lg: 0.75rem;
+  --radius-md: 0.5rem;
+  --radius-sm: 0.25rem;
+}
+
+@layer base {
+  * {
+    @apply border-soraku-secondary/20;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+
+  body {
+    font-family: var(--font-inter);
+    font-weight: 400;
+    background-color: var(--color-background);
+    color: var(--color-foreground);
+    overflow-y: overlay;
+    scrollbar-gutter: stable;
+  }
+
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-outfit);
+    font-weight: 800;
+    color: var(--color-soraku-light);
+  }
+
+  a {
+    @apply text-soraku-primary hover:text-soraku-primary/80 transition-colors duration-200;
+  }
+}
+
+/* Custom thin scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 9999px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Utility: hide scrollbar but keep scrollable */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Keyframe: fade-in-up */
+@keyframes fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.5s ease-out forwards;
+}
+
+/* Keyframe: shimmer for skeleton loaders */
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+.skeleton-shimmer {
+  background: linear-gradient(
+    90deg,
+    var(--color-muted) 25%,
+    var(--color-surface-light) 50%,
+    var(--color-muted) 75%
+  );
+  background-size: 200% 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+}
+
+/* Skeleton pulse - calm variant */
+.skeleton-pulse {
+  background: var(--color-muted);
+  animation: skeleton-pulse 2s ease-in-out infinite;
+}
+
+@keyframes skeleton-pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+/* Badge styles */
+.badge-airing {
+  background: var(--color-soraku-primary);
+  color: white;
+}
+
+.badge-new {
+  background: var(--color-soraku-accent);
+  color: var(--color-soraku-dark);
+}
+
+/* Safe area padding for mobile notches */
+.pb-safe {
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+.pt-safe {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+.pl-safe {
+  padding-left: env(safe-area-inset-left, 0px);
+}
+
+.pr-safe {
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
+/* Anime card gradient overlay */
+.anime-card-gradient {
+  background: linear-gradient(
+    to top,
+    rgba(28, 30, 34, 0.95) 0%,
+    rgba(28, 30, 34, 0.6) 40%,
+    transparent 100%
+  );
+}
+
+/* Hero section gradient */
+.hero-gradient {
+  background: linear-gradient(
+    to bottom,
+    transparent 0%,
+    rgba(28, 30, 34, 0.3) 30%,
+    rgba(28, 30, 34, 0.9) 100%
+  );
+}
+
+/* Active nav indicator */
+.nav-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 60%;
+  background: var(--color-soraku-primary);
+  border-radius: 0 4px 4px 0;
+}
+
+/* Line clamping */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

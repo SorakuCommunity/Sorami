@@ -1,0 +1,98 @@
+import type { SpotlightAnime } from "@/types";
+
+const MOCK_SPOTLIGHT: SpotlightAnime[] = [
+  {
+    id: "1",
+    title: "Demon Slayer: Kimetsu no Yaiba",
+    titleEnglish: "Demon Slayer",
+    poster: "https://cdn.myanimelist.net/images/anime/1286/99835l.jpg",
+    cover: "https://cdn.myanimelist.net/images/anime/1286/99835l.jpg",
+    description:
+      "A family is attacked by demons and only two members survive - Tanjiro and his sister Nezuko, who is turning into a demon slowly. Tanjiro sets out to become a demon slayer to avenge his family and cure his sister.",
+    rating: 88,
+    episodes: 26,
+    totalEpisodes: 26,
+    status: "COMPLETED",
+    year: 2019,
+    type: "TV",
+    genres: ["Action", "Drama", "Fantasy", "Supernatural"],
+    hasSub: true,
+    hasDub: true,
+  },
+  {
+    id: "2",
+    title: "Jujutsu Kaisen",
+    titleEnglish: "Jujutsu Kaisen",
+    poster: "https://cdn.myanimelist.net/images/anime/1295/106927l.jpg",
+    cover: "https://cdn.myanimelist.net/images/anime/1295/106927l.jpg",
+    description:
+      "Yuji Itadori is a boy with tremendous physical strength. To save a classmate from curses, Yuji swallows a cursed object...",
+    rating: 87,
+    episodes: 24,
+    totalEpisodes: 24,
+    status: "COMPLETED",
+    year: 2020,
+    type: "TV",
+    genres: ["Action", "Dark Fantasy", "Supernatural"],
+    hasSub: true,
+    hasDub: true,
+  },
+  {
+    id: "3",
+    title: "One Piece",
+    titleEnglish: "One Piece",
+    poster: "https://cdn.myanimelist.net/images/anime/6/73245l.jpg",
+    cover: "https://cdn.myanimelist.net/images/anime/6/73245l.jpg",
+    description:
+      "Monkey D. Luffy and his pirate crew search for the ultimate treasure, the One Piece, left by the legendary pirate Gol D. Roger. Along the way, they face powerful enemies and form unbreakable bonds.",
+    rating: 89,
+    episodes: 1000,
+    totalEpisodes: 1000,
+    status: "ONGOING",
+    year: 1999,
+    type: "TV",
+    genres: ["Action", "Adventure", "Comedy", "Shounen"],
+    hasSub: true,
+    hasDub: true,
+  },
+  {
+    id: "4",
+    title: "Attack on Titan",
+    titleEnglish: "Attack on Titan",
+    poster: "https://cdn.myanimelist.net/images/anime/10/47347l.jpg",
+    cover: "https://cdn.myanimelist.net/images/anime/10/47347l.jpg",
+    description:
+      "Humanity fights for survival against giant humanoid Titans behind enormous walls. When a Colossal Titan breaches the outer wall, Eren Yeager joins the Survey Corps to fight back and uncover the truth.",
+    rating: 90,
+    episodes: 87,
+    totalEpisodes: 87,
+    status: "COMPLETED",
+    year: 2013,
+    type: "TV",
+    genres: ["Action", "Drama", "Fantasy", "Mystery"],
+    hasSub: true,
+    hasDub: true,
+  },
+  {
+    id: "5",
+    title: "My Hero Academia",
+    titleEnglish: "My Hero Academia",
+    poster: "https://cdn.myanimelist.net/images/anime/10/71745l.jpg",
+    cover: "https://cdn.myanimelist.net/images/anime/10/71745l.jpg",
+    description:
+      "In a world where 80% of humans have superpowers called Quirks, Izuku Midoriya dreams of becoming a hero despite being born Quirkless. His life changes when he inherits the power of All Might.",
+    rating: 85,
+    episodes: 138,
+    totalEpisodes: 138,
+    status: "COMPLETED",
+    year: 2016,
+    type: "TV",
+    genres: ["Action", "Comedy", "School", "Shounen"],
+    hasSub: true,
+    hasDub: true,
+  },
+];
+
+export function useSpotlight() {
+  return MOCK_SPOTLIGHT;
+}
