@@ -1,10 +1,14 @@
 # Ignore everything in the repository
 *
-# Whitelist source directories
+# Whitelist source directories and their contents
 !apps/
+!apps/**/*
 !docs/
+!docs/**/*
 !infra/
+!infra/**/*
 !packages/
+!packages/**/*
 # Whitelist specific root files
 !.gitignore
 !README.md
