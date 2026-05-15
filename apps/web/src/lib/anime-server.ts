@@ -152,9 +152,6 @@ const ANIME_INFO_QUERY = `query ($id: Int) {
     hashtag source
     studios { nodes { name isAnimationStudio } }
     nextAiringEpisode { episode airingAt }
-    recommendations(page: 1, perPage: 10, sort: RATING_DESC) {
-      nodes { mediaRecommendation { id title { romaji english } coverImage { large } averageScore episodes format } }
-    }
   }
 }`;
 
