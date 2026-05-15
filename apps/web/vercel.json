@@ -1,3 +1,4 @@
 {
+  "installCommand": "cd apps/web && npm install",
   "buildCommand": "next build"
 }
