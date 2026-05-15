@@ -8,93 +8,261 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+enum UserRole {
+  USER
+  MODERATOR
+  ADMIN
+}
+
+enum AnimeStatus {
+  RELEASING
+  FINISHED
+  NOT_YET_RELEASED
+  CANCELLED
+  HIATUS
+}
+
+enum RelationType {
+  SEQUEL
+  PREQUEL
+  SIDE_STORY
+  MOVIE
+  OVA
+  SPIN_OFF
+  SUMMARY
+  ALTERNATIVE_VERSION
+  CHARACTER
+  OTHER
+}
+
+enum ProviderName {
+  GOGOANIME
+  ZORO
+  ANIMEPAHE
+  ALLANIME
+  CONSUMET
+  ANILIST
+  MAL
+  TMDB
+}
+
+enum ServerType {
+  VIDSTREAM
+  FILEMOON
+  STREAMSB
+  MIRROR_CDN
+  MP4UPLOAD
+  GOGO_SERVER
+  ZORO_SERVER
+  OTHER
+}
+
 model User {
-  id            String   @id @default(uuid())
-  username      String   @unique
-  email         String   @unique
-  avatar        String?
-  role          String   @default("USER")
-  premiumUntil  DateTime?
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt
-  history       History[]
+  id           String     @id @default(uuid())
+  username     String     @unique
+  email        String     @unique
+  avatar       String?
+  role         UserRole   @default(USER)
+  passwordHash String?
+  isPremium    Boolean    @default(false)
+  premiumUntil DateTime?
+  bannedAt     DateTime?
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  watchHistory  WatchHistory[]
   favorites     Favorite[]
   watchlist     Watchlist[]
   comments      Comment[]
+  notifications Notification[]
+
+  @@map("users")
 }
 
 model Anime {
-  id          String   @id @default(uuid())
+  id          String       @id
+  slug        String       @unique
   title       String
-  slug        String   @unique
+  titleEn     String?
+  titleJa     String?
   synopsis    String?
   posterUrl   String?
   bannerUrl   String?
-  genres      String[] @default([])
-  status      String   // e.g., RELEASING, FINISHED, NOT_YET_RELEASED
-  season      String?  // e.g., WINTER_2023
+  trailerUrl  String?
+  genres      String[]     @default([])
+  tags        String[]     @default([])
+  status      AnimeStatus
+  season      String?
+  year        Int?
   studio      String?
-  score       Float?   // average rating
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  episodes    Episode[]
-  history     History[]
+  score       Float?
+  popularity  Int?
+  episodes    Int?
+  duration    Int?
+  rating      String?
+  source      String?
+  ageRating   String?
+  mappings    AnimeMapping[]
+  episodesRel Episode[]
   favorites   Favorite[]
   watchlist   Watchlist[]
   comments    Comment[]
+  recommendations Recommendation[]
+  recommendedBy   Recommendation[] @relation("RecommendedAnime")
+  relationsFrom Relation[] @relation("RelationFrom")
+  relationsTo   Relation[] @relation("RelationTo")
+  createdAt    DateTime    @default(now())
+  updatedAt    DateTime    @updatedAt
+
+  @@index([status])
+  @@index([score])
+  @@index([popularity])
+  @@index([season])
+  @@index([genres])
+  @@map("anime")
+}
+
+model AnimeMapping {
+  id            String       @id @default(uuid())
+  animeId       String
+  anime         Anime        @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  provider      ProviderName
+  externalId    String
+  externalSlug  String?
+  title         String?
+  url           String?
+  language      String?      @default("en")
+  isPrimary     Boolean      @default(false)
+
+  @@unique([animeId, provider, externalId])
+  @@index([provider, externalId])
+  @@index([animeId])
+  @@map("anime_mappings")
 }
 
 model Episode {
-  id          String   @id @default(uuid())
-  animeId     String
-  anime       Anime    @relation(fields: [animeId], references: [id])
-  number      Int
-  title       String?
-  duration    Int      // in minutes
-  hls320      String?  // URL to 320p HLS stream
-  hls480      String?  // URL to 480p HLS stream
-  hls720      String?  // URL to 720p HLS stream
-  hls1080     String?  // URL to 1080p HLS stream
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  history     History[]
+  id           String   @id @default(uuid())
+  animeId      String
+  anime        Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  number       Int
+  title        String?
+  duration     Int?
+  thumbnail    String?
+  releaseDate  DateTime?
+  airDate      DateTime?
+  isFiller     Boolean  @default(false)
+  seasonNumber Int?     @default(1)
+  score        Float?
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  providers    EpisodeProvider[]
+  watchHistory WatchHistory[]
 
   @@index([animeId, number])
+  @@index([animeId, seasonNumber, number])
+  @@map("episodes")
 }
 
-model History {
+model EpisodeProvider {
+  id             String       @id @default(uuid())
+  episodeId      String
+  episode        Episode      @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  provider       ProviderName
+  url            String?
+  priority       Int          @default(0)
+  availableServers Json?      // JSON array of available server keys
+  subtitleLang   String[]     @default([])
+  subtitleUrl    String?
+  introStart     Int?
+  introEnd       Int?
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+
+  @@unique([episodeId, provider])
+  @@index([provider])
+  @@map("episode_providers")
+}
+
+model StreamingServer {
+  id          String     @id @default(uuid())
+  name        String
+  slug        String     @unique
+  baseUrl     String
+  region      String?    @default("global")
+  type        ServerType
+  priority    Int        @default(0)
+  isActive    Boolean    @default(true)
+  config      Json?      // JSON object with server-specific config (referer, headers, etc.)
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+
+  healthChecks ServerHealth[]
+
+  @@index([type])
+  @@index([isActive, priority])
+  @@map("streaming_servers")
+}
+
+model ServerHealth {
+  id        String   @id @default(uuid())
+  serverId  String
+  server    StreamingServer @relation(fields: [serverId], references: [id], onDelete: Cascade)
+  latency   Int?     // in milliseconds
+  status    String   @default("unknown") // healthy, degraded, down, unknown
+  responseTime Int?
+  error     String?
+  checkedAt DateTime @default(now())
+
+  @@index([serverId, checkedAt])
+  @@index([checkedAt])
+  @@map("server_health")
+}
+
+model WatchHistory {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   episodeId String
-  episode   Episode  @relation(fields: [episodeId], references: [id])
-  progress  Float    @default(0.0) // 0.0 to 1.0
+  episode   Episode  @relation(fields: [episodeId], references: [id], onDelete: Cascade)
+  progress  Float    @default(0.0)
+  completed Boolean  @default(false)
   watchedAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@index([userId, episodeId])
+  @@unique([userId, episodeId])
+  @@index([userId, updatedAt])
+  @@map("watch_history")
 }
 
 model Favorite {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   animeId   String
-  anime     Anime    @relation(fields: [animeId], references: [id])
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
   createdAt DateTime @default(now())
 
   @@unique([userId, animeId])
+  @@index([userId, createdAt])
+  @@map("favorites")
 }
 
 model Watchlist {
   id        String   @id @default(uuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   animeId   String
-  anime     Anime    @relation(fields: [animeId], references: [id])
+  anime     Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  status    String   @default("PLANNING") // WATCHING, COMPLETED, PLANNING, DROPPED, ON_HOLD
+  progress  Int      @default(0)
   createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([userId, animeId])
+  @@index([userId, status])
+  @@map("watchlist")
 }
 
 model Comment {
@@ -106,4 +274,68 @@ model Comment {
   content   String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+}
+
+model Recommendation {
+  id          String   @id @default(uuid())
+  animeId     String
+  anime       Anime    @relation(fields: [animeId], references: [id], onDelete: Cascade)
+  recAnimeId  String
+  recAnime    Anime    @relation("RecommendedAnime", fields: [recAnimeId], references: [id], onDelete: Cascade)
+  score       Float    @default(0.0)
+  reason      String?
+  source      String?  // MAL, ANILIST, CONTENT_BASED, COLLABORATIVE
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([animeId, recAnimeId])
+  @@index([animeId, score])
+  @@index([recAnimeId, score])
+  @@map("recommendations")
+}
+
+model Relation {
+  id          String       @id @default(uuid())
+  animeId     String
+  anime       Anime        @relation("RelationFrom", fields: [animeId], references: [id], onDelete: Cascade)
+  relatedAnimeId String
+  relatedAnime Anime       @relation("RelationTo", fields: [relatedAnimeId], references: [id], onDelete: Cascade)
+  relationType RelationType
+  color       String?
+  label       String?
+  createdAt   DateTime     @default(now())
+
+  @@unique([animeId, relatedAnimeId, relationType])
+  @@index([animeId])
+  @@index([relatedAnimeId])
+  @@map("relations")
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type      String   // NEW_EPISODE, RELEASE_REMINDER, COMMENT_REPLY, SYSTEM
+  title     String
+  body      String
+  data      Json?    // arbitrary payload
+  isRead    Boolean  @default(false)
+  readAt    DateTime?
+  createdAt DateTime @default(now())
+
+  @@index([userId, isRead, createdAt])
+  @@index([userId, createdAt])
+  @@map("notifications")
+}
+
+model AdminSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     Json
+  category  String?  // general, scraping, streaming, caching, etc.
+  description String?
+  updatedAt DateTime @updatedAt
+
+  @@index([category])
+  @@map("admin_settings")
 }
