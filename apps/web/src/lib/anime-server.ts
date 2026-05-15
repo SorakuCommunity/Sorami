@@ -130,7 +130,8 @@ export async function getTrendingAnime(page = 1): Promise<Anime[]> {
   try {
     const res = await anilist.fetchTrendingAnime(page, 20);
     return (res.results || []).map(toAnime);
-  } catch {
+  } catch (e) {
+    console.error("getTrendingAnime error:", e);
     return [];
   }
 }
