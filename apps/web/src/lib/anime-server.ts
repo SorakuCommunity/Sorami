@@ -1,6 +1,6 @@
-import axios from "axios";
+import { META } from "@consumet/extensions";
 
-const API = process.env.NEXT_PUBLIC_API_BASE_URL || "http://localhost:4000";
+const anilist = new META.Anilist();
 
 export interface Anime {
   id: string;
@@ -51,6 +51,20 @@ export interface EpisodeSource {
   headers?: Record<string, string>;
 }
 
+export interface SearchOptions {
+  genre?: string;
+  year?: number;
+  status?: string;
+  type?: string;
+}
+
+const GENRES = [
+  "Action", "Adventure", "Cars", "Comedy", "Drama", "Fantasy",
+  "Horror", "Mahou Shoujo", "Mecha", "Music", "Mystery",
+  "Psychological", "Romance", "Sci-Fi", "Slice of Life",
+  "Sports", "Supernatural", "Thriller",
+];
+
 function mapStatus(s?: string): "ONGOING" | "COMPLETED" | "UPCOMING" {
   switch (s?.toLowerCase()) {
     case "ongoing": case "releasing": return "ONGOING";
@@ -82,110 +96,109 @@ function toAnime(item: any): Anime {
   };
 }
 
-async function get<T>(path: string): Promise<T | null> {
-  try {
-    const { data } = await axios.get(`${API}${path}`, { timeout: 15000 });
-    if (data && typeof data === "object" && "success" in data) return data.data as T;
-    return data as T;
-  } catch { return null; }
-}
-
-export async function getTrendingAnime(page = 1): Promise<Anime[]> {
-  const d = await get<any>(`/anime/trending?page=${page}`);
-  return (d?.results || []).map(toAnime);
-}
-
-export async function getTopAiring(page = 1): Promise<Anime[]> {
-  const d = await get<any>(`/anime/airing?page=${page}`);
-  return (d?.results || []).map(toAnime);
-}
-
-export async function getPopularAnime(page = 1): Promise<Anime[]> {
-  const d = await get<any>(`/anime/popular?page=${page}`);
-  const all: any[] = [];
-  if (d && typeof d === "object") Object.values(d).forEach((v: any) => { if (Array.isArray(v)) all.push(...v); });
-  return all.map(toAnime);
-}
-
-export async function getSeasonalAnime(): Promise<Anime[]> {
-  const d = await get<any>(`/anime/seasonal`);
-  return (d?.results || []).map(toAnime);
-}
-
-export async function getRecentAnime(page = 1): Promise<Anime[]> {
-  const d = await get<any>(`/anime/recent?page=${page}`);
-  const all: any[] = [];
-  if (d && typeof d === "object") Object.values(d).forEach((v: any) => { if (Array.isArray(v)) all.push(...v); });
-  return all.map(toAnime);
-}
-
-export async function getTopRatedAnime(page = 1): Promise<Anime[]> {
-  const d = await get<any>(`/anime/top-rated?page=${page}`);
-  return (d?.results || []).map(toAnime);
-}
-
-export async function getAiringAnime(page = 1): Promise<Anime[]> {
-  const d = await get<any>(`/anime/airing?page=${page}`);
-  return (d?.results || []).map(toAnime);
+function toEpisode(ep: any, animeId: string): Episode {
+  return {
+    id: ep.id,
+    animeId,
+    number: ep.number,
+    title: ep.title || `Episode ${ep.number}`,
+    image: ep.image,
+    isSubbed: true,
+    isDubbed: false,
+  };
 }
 
 export async function getAnimeById(id: string): Promise<Anime | null> {
-  const d = await get<any>(`/anime/${id}`);
-  return d ? toAnime(d) : null;
+  try {
+    const info = await anilist.fetchAnimeInfo(id);
+    return info ? toAnime(info) : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function getAnimeEpisodes(id: string): Promise<Episode[]> {
-  const d = await get<any>(`/anime/${id}/episodes`);
-  if (!d || !Array.isArray(d)) return [];
-  return d.map((ep: any) => ({
-    id: ep.id || String(ep.number),
-    animeId: id, number: ep.number, title: ep.title,
-    description: ep.description, image: ep.image, url: ep.url,
-    isSubbed: ep.isSubbed, isDubbed: ep.isDubbed, releaseDate: ep.releaseDate,
-  }));
+  try {
+    const info = await anilist.fetchAnimeInfo(id);
+    return (info?.episodes || []).map((ep: any) => toEpisode(ep, id));
+  } catch {
+    return [];
+  }
 }
 
-export async function getEpisodeSources(episodeId: string, server?: string, subOrDub = "sub", useProxy = true): Promise<EpisodeSource | null> {
-  const params = new URLSearchParams();
-  if (server) params.set("server", server);
-  if (useProxy) params.set("proxy", "true");
-  const qs = params.toString();
-  const d = await get<any>(`/stream/${encodeURIComponent(episodeId)}${qs ? `?${qs}` : ""}`);
-  if (!d) return null;
-  return {
-    sources: (d.sources || []).map((s: any) => ({ url: s.url, quality: s.quality || "default", isM3U8: s.isM3U8 })),
-    subtitles: (d.subtitles || []).map((s: any) => ({ url: s.url, label: s.label || s.lang, lang: s.lang })),
-    headers: d.headers,
-  };
+export async function getTrendingAnime(page = 1): Promise<Anime[]> {
+  try {
+    const res = await anilist.fetchTrendingAnime(page, 20);
+    return (res.results || []).map(toAnime);
+  } catch {
+    return [];
+  }
 }
 
-export async function searchAnime(query: string, page = 1, filters?: {
-  genre?: string; year?: number; status?: string; type?: string; sort?: string[];
-}): Promise<AnimeSearchResult> {
-  const params = new URLSearchParams({ q: query, page: String(page) });
-  if (filters?.genre) params.set("genres", `["${filters.genre}"]`);
-  if (filters?.year) params.set("year", String(filters.year));
-  if (filters?.status) params.set("status", filters.status);
-  if (filters?.type) params.set("type", filters.type);
-  const d = await get<any>(`/anime/search?${params}`);
-  return {
-    animes: (d?.results || []).map(toAnime),
-    totalPages: d?.totalPages || 1,
-    currentPage: page,
-    hasNextPage: d?.hasNextPage,
-  };
+export async function getPopularAnime(page = 1): Promise<Anime[]> {
+  try {
+    const res = await anilist.fetchPopularAnime(page, 20);
+    return (res.results || []).map(toAnime);
+  } catch {
+    return [];
+  }
+}
+
+export async function getTopRatedAnime(page = 1): Promise<Anime[]> {
+  try {
+    const res = await anilist.advancedSearch(undefined, undefined, page, 20, undefined, ["SCORE_DESC"]);
+    return (res.results || []).map(toAnime);
+  } catch {
+    return [];
+  }
+}
+
+export async function getAiringAnime(page = 1): Promise<Anime[]> {
+  try {
+    const res = await anilist.advancedSearch(undefined, undefined, page, 20, undefined, undefined, undefined, undefined, undefined, "RELEASING");
+    return (res.results || []).map(toAnime);
+  } catch {
+    return [];
+  }
+}
+
+export async function searchAnime(query: string, page = 1, options?: SearchOptions): Promise<AnimeSearchResult> {
+  try {
+    if (options && (options.genre || options.year || options.status || options.type)) {
+      const res = await anilist.advancedSearch(
+        query || undefined,
+        undefined, page, 20,
+        options.type?.toUpperCase() === "MOVIE" ? "MOVIE" : undefined,
+        undefined,
+        options.genre ? [options.genre] : undefined,
+        undefined,
+        options.year,
+        options.status?.toUpperCase(),
+      );
+      return {
+        animes: (res.results || []).map(toAnime),
+        totalPages: res.totalPages || 1,
+        currentPage: page,
+        hasNextPage: res.hasNextPage,
+      };
+    }
+    const res = await anilist.search(query, page, 20);
+    return {
+      animes: (res.results || []).map(toAnime),
+      totalPages: res.totalPages || 1,
+      currentPage: page,
+      hasNextPage: res.hasNextPage,
+    };
+  } catch {
+    return { animes: [], totalPages: 1, currentPage: page };
+  }
 }
 
 export async function getGenres(): Promise<string[]> {
-  return ["Action","Adventure","Cars","Comedy","Drama","Fantasy","Horror","Mecha","Music","Mystery","Psychological","Romance","Sci-Fi","Slice of Life","Sports","Supernatural","Thriller"];
+  return GENRES;
 }
 
-export async function genreSearch(genre: string, page = 1): Promise<AnimeSearchResult> {
-  const d = await get<any>(`/anime/search?genres=["${genre}"]&page=${page}`);
-  return {
-    animes: (d?.results || []).map(toAnime),
-    totalPages: d?.totalPages || 1,
-    currentPage: page,
-    hasNextPage: d?.hasNextPage,
-  };
-}
+// Keep for backwards compatibility
+export const getSeasonalAnime = getTrendingAnime;
+export const getRecentAnime = getPopularAnime;
+export const getTopAiring = getAiringAnime;
